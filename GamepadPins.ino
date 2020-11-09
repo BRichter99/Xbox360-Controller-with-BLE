@@ -58,27 +58,33 @@ uint16_t buttons() {
 }
 
 void getAxes(int8_t *analogs) {
-  for (int i = N_AXES; --i >= 0;) {
-    int v = variance(analogRead(axisPins[i]), resting[i], minVal[i], maxVal[i]);
+  int v;
 
-    uint8_t mode = i % 3;
-    if (mode == 2) {
-      // trigger
-      analogs[i] = map(v, 0, minVal[i] - resting[i], TRIGGER_MIN, TRIGGER_MAX);
-    } else {
-      // stick                        Y-axis     X-axis
-      int upperLimit = (mode == 1) ? AXIS_MIN : AXIS_MAX;
-      int lowerLimit = (mode == 1) ? AXIS_MAX : AXIS_MIN;
-      if (v < 0) {
-        analogs[i] = map(v, minVal[i] - resting[i], 0, upperLimit, 0);
-      } else {
-        analogs[i] = map(v, 0, maxVal[i] - resting[i], 0, lowerLimit);
-      }
-    }
+  v = variance(analogRead(POT_LS_X), resting[0], minVal[0], maxVal[0]);
+  analogs[0] = mapAnalog(v, (minVal[0] - resting[0]), (maxVal[0] - resting[0]), AXIS_MIN, AXIS_MAX);
+  v = variance(analogRead(POT_LS_Y), resting[1], minVal[1], maxVal[1]);
+  analogs[1] = mapAnalog(v, (minVal[1] - resting[1]), (maxVal[1] - resting[1]), AXIS_MIN, AXIS_MAX);
+  v = variance(analogRead(POT_LT), resting[2], minVal[2], maxVal[2]);
+  analogs[2] = map(v, 0, (minVal[2] - resting[2]), TRIGGER_MIN, TRIGGER_MAX);
+  v = variance(analogRead(POT_RS_X), resting[3], minVal[3], maxVal[3]);
+  analogs[3] = -128
+    + mapAnalog(v, (minVal[3] - resting[3]), (maxVal[3] - resting[3]), AXIS_MIN, AXIS_MAX);
+  v = variance(analogRead(POT_RS_Y), resting[4], minVal[4], maxVal[4]);
+  analogs[4] = -128
+    + mapAnalog(v, (minVal[4] - resting[4]), (maxVal[4] - resting[4]), AXIS_MIN, AXIS_MAX);
+  v = variance(analogRead(POT_RT), resting[5], minVal[5], maxVal[5]);
+  analogs[5] = map(v, 0, (minVal[5] - resting[5]), TRIGGER_MIN, TRIGGER_MAX);
+}
+
+int8_t mapAnalog(int v, int fromLimitMin, int fromLimitMax, int toLimitMin, int toLimitMax) {
+  if (v < 0) {
+    return map(v, fromLimitMin, 0, toLimitMax, 0);
+  } else {
+    return map(v, 0, fromLimitMax, 0, toLimitMin);
   }
 }
 
-int16_t variance(int16_t value, int16_t resting, int16_t min, int16_t max) {
+    int16_t variance(int16_t value, int16_t resting, int16_t min, int16_t max) {
   int16_t narrowed = value;
   if (value > max) {
     narrowed = max;
