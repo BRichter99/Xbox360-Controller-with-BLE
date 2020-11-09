@@ -3,7 +3,9 @@
 
 #include "BleGamepad.h"
 
-/*          _________________
+/* ADC2 is unavailable when using Wifi/Bluetooth 
+
+            _________________
   no-pu|lup | EN            | 23
 ADC1   |-36 | VP            | 22
 |      \-39 | VN         TX0|  1
@@ -34,27 +36,27 @@ uint8_t dpad();
 // digital
 #define BUTTON_LB     13  // XXX
 #define BUTTON_LS     27  // TP31
-#define BUTTON_LEFT   23 // TP32 DPAD
-#define BUTTON_UP      3  // TP33 DPAD
-#define BUTTON_RIGHT   1  // TP34 DPAD
-#define BUTTON_DOWN   22  // TP35 DPAD
+#define BUTTON_LEFT    1  // TP32 DPAD
+#define BUTTON_UP     19  // TP33 DPAD
+#define BUTTON_RIGHT  21  // TP34 DPAD
+#define BUTTON_DOWN    3  // TP35 DPAD
 #define BUTTON_BACK   12  // TP41
 #define BUTTON_XBOX   14  // TP42
-#define BUTTON_START  32  // TP40
-#define BUTTON_RB      4  // XXX
-#define BUTTON_RS     16  // TP30
+#define BUTTON_START  23  // TP40
+#define BUTTON_RB     17  // XXX
+#define BUTTON_RS      5  // TP30
 #define BUTTON_A      25  // TP39
-#define BUTTON_B      33  // TP43
-#define BUTTON_X      21  // TP44
+#define BUTTON_B      22  // TP43
+#define BUTTON_X      18  // TP44
 #define BUTTON_Y      26  // TP38
 
 // analog
-#define POT_LS_X  34   // TP14
-#define POT_LS_Y  35   // TP13
-#define POT_LT    36   // TP 9
-#define POT_RS_X  15   // TP12
-#define POT_RS_Y   2   // TP11
-#define POT_RT    39   // TP10
+#define POT_LS_X  36   // TP14
+#define POT_LS_Y  39   // TP13
+#define POT_LT    35   // TP 9
+#define POT_RS_X  33   // TP12
+#define POT_RS_Y  32   // TP11
+#define POT_RT    34   // TP10
 /* according to https://circuits4you.com/2018/12/31/esp32-devkit-esp32-wroom-gpio-pinout/
   analog pins on the ESP32 WROOM32 DevKit are:
   ADC1:   32, 33, 34, 35, 36, 39
@@ -63,9 +65,9 @@ uint8_t dpad();
   DAC2:   26  */
 
 // leds
-#define LED_1  5
-#define LED_2 17
-#define LED_3 18
-#define LED_4 19
+#define LED_1  2
+#define LED_2 15
+#define LED_3  4
+#define LED_4 16
 
 #endif  // GAMEPAD_PINS_H
