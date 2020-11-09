@@ -42,8 +42,8 @@ void loop() {
 
       // output
       PRINT_BINARY(b);
-      PRINTF(" | %d | {lX=+%3d}, {lY=%+3d}, {lZ=%+3d}, {rZ=%+3d}, {rX=%+3d}, {rY=%+3d}\n", hat,
-             analogs[0], analogs[1], analogs[2], analogs[5], analogs[3], analogs[4]);
+      PRINTF(" | %c | {lX=%+4d}, {lY=%+4d}, {lZ=%+4d}, {rZ=%+4d}, {rX=%+4d}, {rY=%+4d}\n",
+        dpadToChar(hat), analogs[0], analogs[1], analogs[2], analogs[5], analogs[3], analogs[4]);
 
       // delay
       delay(1000);
