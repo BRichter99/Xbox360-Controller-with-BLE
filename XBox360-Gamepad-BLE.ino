@@ -8,13 +8,16 @@
 #include "Log.h"            // enable / disable Serial output
 #include "esp_log.h"        // for time measurements
 
-#define N_MEASUREMENTS  32
+#define N_MEASUREMENTS  200
+#define FREQUENCY 100
+const int DELAY_MS = 1000 / FREQUENCY;
 
 BleGamepad bleGamepad("Xbox-ESP", "Richter", 100);
 
 int8_t analogs[N_AXES];
 
 void led_greeting();
+void sleep_until_multiple_of(uint16_t);
 
 void setup() {
   INIT(); // Serial
@@ -46,7 +49,7 @@ void loop() {
         dpadToChar(hat), analogs[0], analogs[1], analogs[2], analogs[5], analogs[3], analogs[4]);
 
       // delay
-      delay(1000);
+      delay(DELAY_MS);
     }
     int t1 = esp_log_timestamp();
     PRINTF("Average period: %dms (%d measurements)\n", (t1 - t0) / n, n);
@@ -64,4 +67,8 @@ void led_greeting() {
   delay(300);
   for (int led = 4; --led >= 0;)
     digitalWrite(leds[led], HIGH);
+}
+
+void sleep_until_multiple_of(uint16_t n_ms) {
+  delay(n_ms  - (esp_log_timestamp() % n_ms));
 }
