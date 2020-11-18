@@ -3,70 +3,51 @@
  * by using an ESP32 to read the inputs and connecting to Windows via BLE
  */
 
+#include "nvs_flash.h"
+#include "esp_log.h" // for time measurements
 #include "BleGamepad.h"
+#include "LedModule.h"
+#include "Profiles.h"
 #include "GamepadPins.h"
-#include "Log.h"            // enable / disable Serial output
-#include "esp_log.h"        // for time measurements
+#include "Log.h"
 
 #define N_MEASUREMENTS  200
-#define FREQUENCY 100
+#define FREQUENCY 30
 const int DELAY_MS = 1000 / FREQUENCY;
+const int DELAY_NOT_CONNECTED = 750;
+uint8_t ledOn = 0;
 
 BleGamepad bleGamepad("Xbox-ESP", "Richter", 100);
-
-int8_t analogs[N_AXES];
+Profiles *p;
 
 void led_greeting();
 void sleep_until_multiple_of(uint16_t);
 
 void setup() {
-  INIT(); // Serial
+  nvs_flash_init();
+  p = new Profiles(&bleGamepad);
+  SERIAL_INIT();
   setupPins();
+  PRINTF("Boot complete\n");
   led_greeting();
-  bleGamepad.begin();
-  PRINTF("\nBoot complete\n");
 }
+
+int n, t0, t1;
 
 void loop() {
-  int n = N_MEASUREMENTS;
-  if (bleGamepad.isConnected()) {
-    int t0 = esp_log_timestamp();
-    for (int i=n; --i>=0; ) {
-      // measure
-      uint16_t b = buttons();
-      uint8_t hat = dpad();
-      getAxes(analogs);
-
-      // set values to bleGamepad
-      bleGamepad.release(~b);
-      bleGamepad.press(b);
-      bleGamepad.setAxes(analogs[0], analogs[1], analogs[2], analogs[5], analogs[3], analogs[4],
-                         hat);
-
-      // output
-      PRINT_BINARY(b);
-      PRINTF(" | %c | {lX=%+4d}, {lY=%+4d}, {lZ=%+4d}, {rZ=%+4d}, {rX=%+4d}, {rY=%+4d}\n",
-        dpadToChar(hat), analogs[0], analogs[1], analogs[2], analogs[5], analogs[3], analogs[4]);
-
-      // delay
-      delay(DELAY_MS);
+  STOPWATCH_START();
+  for (n=1; n<=N_MEASUREMENTS; n++) {
+    if (bleGamepad.isConnected()) {
+      p->handleInputs();
+      sleep_until_multiple_of(DELAY_MS);
+    } else {
+      // blink all LEDs
+      led_set(ledOn);
+      ledOn = ~ledOn;
+      sleep_until_multiple_of(DELAY_NOT_CONNECTED);
     }
-    int t1 = esp_log_timestamp();
-    PRINTF("Average period: %dms (%d measurements)\n", (t1 - t0) / n, n);
   }
-}
-
-int leds[4] = {LED_3, LED_4, LED_2, LED_1};
-void led_greeting() {
-  for (int led = 4; --led >= 0;)
-    digitalWrite(leds[led], HIGH);
-  for (int led = 4; --led >= 0;) {
-    digitalWrite(leds[led], LOW);
-    delay(75);
-  }
-  delay(300);
-  for (int led = 4; --led >= 0;)
-    digitalWrite(leds[led], HIGH);
+  STOPWATCH_STOP();
 }
 
 void sleep_until_multiple_of(uint16_t n_ms) {
