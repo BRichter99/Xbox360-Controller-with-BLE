@@ -1,4 +1,7 @@
 #define SERIAL_OUT
+#ifndef LOG_H
+#define LOG_H
+
 #include <HardwareSerial.h>
 
 #define PASS do {} while (0)
@@ -9,7 +12,7 @@
 
 #define PRINTF(...) do { Serial.printf(__VA_ARGS__); } while (0)
 
-#define PRINT_BINARY(x) for (int i = 0; i < 8*sizeof(x); i++) { PRINTF("%d", (b >> i & 0x1)); }
+#define PRINT_BINARY(x) for (int i = 0; i < 8*sizeof(x); i++) { PRINTF("%d", (x >> i & 0x1)); }
 
 #else
 #define INIT() PASS
@@ -32,3 +35,4 @@ char dpadToChar(uint8_t dpad) {
     default:                return 'X';
   }
 }
+#endif //LOG_H
