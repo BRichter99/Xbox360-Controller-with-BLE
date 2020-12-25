@@ -28,6 +28,8 @@ uint16_t buttons();
 void getAxes(int8_t *);
 uint8_t dpad();
 
+char dpadToChar(uint8_t);
+
 #define N_BUTTONS 15
 #define N_AXES     6
 #define BUTTON_OUT 0

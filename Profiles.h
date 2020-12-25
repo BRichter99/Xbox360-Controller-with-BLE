@@ -17,10 +17,9 @@ struct {
 
 class Profiles {
 private:
-  BleGamepad bleGamepad;
+  inputs_t inputs_tmp;
   int currentProfile;
   bool switchButton;
-  inputs_t inputs;
   int8_t **analogAvg;           // 2-dimensional array for average calculation
   uint8_t cyclingAveragePointer;// points to the current analog-array
   static void p0(inputs_t*, int8_t**, uint8_t);
@@ -30,8 +29,11 @@ private:
   void (*profiles[N_PROFILES])(inputs_t*, int8_t**, uint8_t)
     = { &p0, &p1, &p2, &p3, };
 public:
-  Profiles(BleGamepad*);
-  void handleInputs();
+  Profiles();
+  inputs_t inputs;
+  SemaphoreHandle_t inputsMutex;
+  void scanInputs();
+  int getCurrentProfile();
 };
 
 #endif

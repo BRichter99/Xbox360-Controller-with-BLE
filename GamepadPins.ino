@@ -124,3 +124,28 @@ uint8_t dpad() {
       return DPAD_CENTERED;
   }
 }
+
+char dpadToChar(uint8_t dpad) {
+  switch (dpad) {
+  case DPAD_CENTERED:
+    return '0';
+  case DPAD_UP:
+    return '^';
+  case DPAD_UP_RIGHT:
+    return '/';
+  case DPAD_RIGHT:
+    return '>';
+  case DPAD_DOWN_RIGHT:
+    return 'l';
+  case DPAD_DOWN:
+    return 'v';
+  case DPAD_DOWN_LEFT:
+    return ',';
+  case DPAD_LEFT:
+    return '<';
+  case DPAD_UP_LEFT:
+    return '`';
+  default:
+    return 'X';
+  }
+}

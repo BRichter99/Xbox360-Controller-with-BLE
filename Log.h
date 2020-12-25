@@ -1,4 +1,5 @@
-#define SERIAL_OUT
+//#define SERIAL_OUT
+/* comment out this first line to disable serial output */
 #ifndef LOG_H
 #define LOG_H
 
