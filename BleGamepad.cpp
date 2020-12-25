@@ -85,11 +85,11 @@ BleGamepad::BleGamepad(std::string deviceName, std::string deviceManufacturer, u
 
 void BleGamepad::begin(void)
 {
-  xTaskCreate(this->taskServer, "server", 20000, (void *)this, 5, NULL);
+  xTaskCreate(this->taskServer, "server", 20000, (void *)this, 5, &server);
 }
 
-void BleGamepad::end(void)
-{
+void BleGamepad::end(void) {
+  vTaskDelete(server);
 }
 
 void BleGamepad::setAxes(signed char x, signed char y, signed char z, signed char rZ, char rX, char rY, signed char hat)
@@ -139,6 +139,10 @@ bool BleGamepad::isPressed(uint16_t b)
 
 bool BleGamepad::isConnected(void) {
   return this->connectionStatus->connected;
+}
+
+SemaphoreHandle_t* BleGamepad::semaphor() {
+  return &(this->connectionStatus->sem);
 }
 
 void BleGamepad::setBatteryLevel(uint8_t level) {

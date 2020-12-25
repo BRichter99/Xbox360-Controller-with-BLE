@@ -9,8 +9,11 @@
 
 class BleConnectionStatus : public BLEServerCallbacks
 {
+private:
+  BLE2902* descriptor();
 public:
   BleConnectionStatus(void);
+  SemaphoreHandle_t sem;
   bool connected = false;
   void onConnect(BLEServer* pServer);
   void onDisconnect(BLEServer* pServer);

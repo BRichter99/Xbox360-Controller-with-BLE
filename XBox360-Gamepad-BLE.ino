@@ -27,11 +27,6 @@ void TaskScanInputs(void*);
 
 void sleep_until_multiple_of(uint16_t n_ms) { delay(n_ms - (esp_log_timestamp() % n_ms)); }
 
-void wait_for_coordinator() {
-  xSemaphoreTake(coordinator, portMAX_DELAY);
-  xSemaphoreGive(coordinator);
-}
-
 void setup() {
   nvs_flash_init();
   p = new Profiles();
@@ -57,8 +52,7 @@ int n, t0, t1;
 
 void loop() {
   if (bleGamepad.isConnected()) {
-    wait_for_coordinator();
-
+    xSemaphoreTake(p->inputsSemaphore, portMAX_DELAY);
     xSemaphoreTake(p->inputsMutex, portMAX_DELAY);
     inputs2send = p->inputs;
     xSemaphoreGive(p->inputsMutex);
@@ -83,12 +77,15 @@ void TaskScanInputs(void *params) {
   while(1) {
     STOPWATCH_START();
     for (n = 1; n <= N_MEASUREMENTS; n++) {
-      p->scanInputs();
-      xSemaphoreTake(coordinator, portMAX_DELAY);
+      int consecutiveSwitchPresses = p->scanInputs();
+      if (consecutiveSwitchPresses >= FREQUENCY) {
+        PRINTF("RESTART\n");
+        throw -1;
+      }
+      xSemaphoreTake(*bleGamepad.semaphor(), portMAX_DELAY);
       sleep_until_multiple_of(DELAY_MS);
-      xSemaphoreGive(coordinator);
+      xSemaphoreGive(*bleGamepad.semaphor());
     }
     STOPWATCH_STOP();
   }
 }
-

@@ -34,6 +34,7 @@
 
 class BleGamepad {
 private:
+  TaskHandle_t server;
   uint16_t _buttons;
   BleConnectionStatus* connectionStatus;
   BLEHIDDevice* hid;
@@ -51,6 +52,7 @@ public:
   bool isPressed(uint16_t b = BUTTON_1); // check BUTTON_1 by default
   bool isConnected(void);
   void setBatteryLevel(uint8_t level);
+  SemaphoreHandle_t *semaphor();
   uint8_t batteryLevel;
   std::string deviceManufacturer;
   std::string deviceName;

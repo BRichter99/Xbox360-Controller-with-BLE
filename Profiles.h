@@ -19,7 +19,7 @@ class Profiles {
 private:
   inputs_t inputs_tmp;
   int currentProfile;
-  bool switchButton;
+  int consecutiveSwitchPresses;
   int8_t **analogAvg;           // 2-dimensional array for average calculation
   uint8_t cyclingAveragePointer;// points to the current analog-array
   static void p0(inputs_t*, int8_t**, uint8_t);
@@ -32,7 +32,8 @@ public:
   Profiles();
   inputs_t inputs;
   SemaphoreHandle_t inputsMutex;
-  void scanInputs();
+  SemaphoreHandle_t inputsSemaphore;
+  int scanInputs();
   int getCurrentProfile();
 };
 
